@@ -1,14 +1,37 @@
 import { useState } from "react";
+
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router";
+
+import useAuth from "../hooks/useAuth.js";
 import "../styles/login.css";
 
 function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const {
+    autenticado,
+    cargandoSesion,
+    iniciarSesion,
+  } = useAuth();
+
   const [formulario, setFormulario] = useState({
     usuario: "",
     clave: "",
   });
 
   const [errores, setErrores] = useState({});
-  const [mensaje, setMensaje] = useState("");
+  const [errorServidor, setErrorServidor] =
+    useState("");
+
+  const [enviando, setEnviando] = useState(false);
+
+  const rutaDestino =
+    location.state?.from?.pathname || "/dashboard";
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -23,53 +46,89 @@ function Login() {
       [name]: "",
     }));
 
-    setMensaje("");
+    setErrorServidor("");
   };
 
   const validarFormulario = () => {
     const nuevosErrores = {};
 
     if (!formulario.usuario.trim()) {
-      nuevosErrores.usuario = "Debe ingresar el nombre de usuario.";
+      nuevosErrores.usuario =
+        "Debe ingresar el nombre de usuario.";
     }
 
     if (!formulario.clave.trim()) {
-      nuevosErrores.clave = "Debe ingresar la contraseña.";
+      nuevosErrores.clave =
+        "Debe ingresar la contraseña.";
     }
 
     return nuevosErrores;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const nuevosErrores = validarFormulario();
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores);
-      setMensaje("");
       return;
     }
 
     setErrores({});
-    setMensaje(
-      "Formulario validado correctamente. Falta conectarlo con el backend PHP.",
-    );
+    setErrorServidor("");
+    setEnviando(true);
+
+    try {
+      await iniciarSesion(formulario);
+
+      navigate(rutaDestino, {
+        replace: true,
+      });
+    } catch (error) {
+      setErrorServidor(
+        error.message ||
+          "No fue posible iniciar sesión.",
+      );
+    } finally {
+      setEnviando(false);
+    }
   };
+
+  if (cargandoSesion) {
+    return (
+      <main className="auth-loading">
+        <p>Verificando sesión...</p>
+      </main>
+    );
+  }
+
+  if (autenticado) {
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    );
+  }
 
   return (
     <main className="login-page">
       <section className="login-brand-panel">
         <div className="login-brand-content">
-          <div className="login-logo" aria-hidden="true">
+          <div
+            className="login-logo"
+            aria-hidden="true"
+          >
             EC
           </div>
 
           <h1>Emprendicoop</h1>
 
           <p>
-            Sistema web para la gestión de socios, ahorros, préstamos,
-            pagos y reportes administrativos.
+            Sistema web para la gestión de socios,
+            ahorros, préstamos, pagos y reportes
+            administrativos.
           </p>
         </div>
       </section>
@@ -78,7 +137,11 @@ function Login() {
         <div className="login-card">
           <header className="login-card-header">
             <h2>Iniciar sesión</h2>
-            <p>Ingrese sus credenciales para acceder al sistema.</p>
+
+            <p>
+              Ingrese sus credenciales para acceder al
+              sistema.
+            </p>
           </header>
 
           <form
@@ -87,7 +150,10 @@ function Login() {
             noValidate
           >
             <div className="form-group">
-              <label className="form-label" htmlFor="usuario">
+              <label
+                className="form-label"
+                htmlFor="usuario"
+              >
                 Usuario
               </label>
 
@@ -102,21 +168,21 @@ function Login() {
                 onChange={handleChange}
                 autoComplete="username"
                 placeholder="Ingrese su usuario"
-                aria-invalid={Boolean(errores.usuario)}
-                aria-describedby={
-                  errores.usuario ? "usuario-error" : undefined
-                }
+                disabled={enviando}
               />
 
               {errores.usuario && (
-                <p id="usuario-error" className="form-error">
+                <p className="form-error">
                   {errores.usuario}
                 </p>
               )}
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="clave">
+              <label
+                className="form-label"
+                htmlFor="clave"
+              >
                 Contraseña
               </label>
 
@@ -131,26 +197,33 @@ function Login() {
                 onChange={handleChange}
                 autoComplete="current-password"
                 placeholder="Ingrese su contraseña"
-                aria-invalid={Boolean(errores.clave)}
-                aria-describedby={
-                  errores.clave ? "clave-error" : undefined
-                }
+                disabled={enviando}
               />
 
               {errores.clave && (
-                <p id="clave-error" className="form-error">
+                <p className="form-error">
                   {errores.clave}
                 </p>
               )}
             </div>
 
-            {mensaje && <p className="login-message">{mensaje}</p>}
+            {errorServidor && (
+              <p
+                className="login-server-error"
+                role="alert"
+              >
+                {errorServidor}
+              </p>
+            )}
 
             <button
               type="submit"
               className="btn-primary login-submit"
+              disabled={enviando}
             >
-              Iniciar sesión
+              {enviando
+                ? "Verificando..."
+                : "Iniciar sesión"}
             </button>
           </form>
 

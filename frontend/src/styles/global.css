@@ -78,3 +78,18 @@ p {
   border: none;
   border-radius: 7px;
 }
+
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 30px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
