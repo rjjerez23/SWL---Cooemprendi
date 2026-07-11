@@ -191,3 +191,18 @@
     align-items: flex-start;
   }
 }
+
+.login-server-error {
+  padding: 12px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-danger);
+  background-color: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  border-radius: 8px;
+}
+
+.login-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
