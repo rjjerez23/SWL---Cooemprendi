@@ -1,1 +1,50 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><link rel='stylesheet' href='assets/css/style.css'><title>Socios</title></head><body><div class='sidebar'><h2>COOEMPRENDI</h2></div><div class='content'><h1>Socios</h1><p>Página en diseño.</p></div></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset='UTF-8'>
+    <link rel='stylesheet' href='assets/css/style.css'>
+    <title>Socios</title>
+</head>
+<body>
+    <div class='sidebar'>
+        <h2>COOEMPRENDI</h2>
+    </div>
+    
+    <div class='content'>
+        <h1>Socios</h1>
+        
+        <!-- Formulario para registrar socios -->
+        <form id="form-socios">
+            <h3>Registrar Nuevo Socio</h3>
+            <label>Nombre Completo:</label>
+            <input type="text" id="socio-nombre" required><br><br>
+            
+            <label>Cédula o ID:</label>
+            <input type="text" id="socio-id" required><br><br>
+            
+            <label>Teléfono:</label>
+            <input type="tel" id="socio-telefono" required><br><br>
+            
+            <button type="submit">Registrar Socio</button>
+        </form>
+        
+        <hr>
+        
+        <!-- Tabla de Socios -->
+        <h3>Listado de Socios</h3>
+        <table border="1" id="tabla-socios">
+            <thead>
+                <tr>
+                    <th>ID / Cédula</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody id="lista-socios"></tbody>
+        </table>
+    </div>
+
+    <!-- Enlace al archivo externo de JavaScript -->
+    <script src="socios.js"></script>
+</body>
+</html>
