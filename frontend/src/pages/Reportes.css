@@ -1,0 +1,137 @@
+.reportes-page {
+  width: 100%;
+}
+
+.reportes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.reportes-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+}
+
+.reportes-subtitle {
+  margin: 0 0 6px;
+  color: #15803d;
+  font-weight: 700;
+}
+
+.reportes-descripcion {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
+.btn-exportar {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #15803d;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tarjetas-reportes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.tarjeta-reporte {
+  padding: 24px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+.tarjeta-reporte span {
+  display: block;
+  margin-bottom: 12px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.tarjeta-reporte strong {
+  color: #111827;
+  font-size: 25px;
+}
+
+.tabla-reporte-card {
+  padding: 28px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.tabla-reporte-card h2 {
+  margin-top: 0;
+  color: #111827;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.tabla-reportes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reportes th,
+.tabla-reportes td {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabla-reportes th {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.estado-reporte {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.estado-reporte.completado,
+.estado-reporte.aprobado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.estado-reporte.pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.btn-exportar:hover {
+  opacity: 0.88;
+}
+
+@media (max-width: 950px) {
+  .tarjetas-reportes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .reportes-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tarjetas-reportes {
+    grid-template-columns: 1fr;
+  }
+}
