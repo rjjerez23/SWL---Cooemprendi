@@ -1,0 +1,49 @@
+.prestamos-page {
+  min-height: 100vh;
+  padding: 40px;
+  background: #f4f6f8;
+}
+
+.prestamos-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.prestamos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prestamos-header h1 {
+  color: #111827;
+}
+
+.prestamos-subtitle {
+  color: #15803d;
+  font-weight: bold;
+}
+
+.btn-nuevo {
+  background: #15803d;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.tabla-prestamos {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.tabla-prestamos th,
+.tabla-prestamos td {
+  border-bottom: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
