@@ -1,122 +1,66 @@
+import { useEffect, useState } from "react";
+import { apiRequest, formatMoney } from "../services/apiClient.js";
 import "./Reportes.css";
 
 function Reportes() {
-  const movimientos = [
-    {
-      id: 1,
-      socio: "Juan Pérez",
-      tipo: "Pago",
-      monto: "RD$ 2,000",
-      fecha: "01/07/2026",
-      estado: "Completado",
-    },
-    {
-      id: 2,
-      socio: "María López",
-      tipo: "Préstamo",
-      monto: "RD$ 25,000",
-      fecha: "02/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 3,
-      socio: "Carlos Rodríguez",
-      tipo: "Pago",
-      monto: "RD$ 1,500",
-      fecha: "03/07/2026",
-      estado: "Completado",
-    },
-    {
-      id: 4,
-      socio: "Ana Martínez",
-      tipo: "Préstamo",
-      monto: "RD$ 40,000",
-      fecha: "04/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 5,
-      socio: "Pedro Gómez",
-      tipo: "Pago",
-      monto: "RD$ 2,500",
-      fecha: "05/07/2026",
-      estado: "Completado",
-    },
-    {
-      id: 6,
-      socio: "Laura Fernández",
-      tipo: "Pago",
-      monto: "RD$ 4,000",
-      fecha: "06/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 7,
-      socio: "José Ramírez",
-      tipo: "Pago",
-      monto: "RD$ 3,000",
-      fecha: "07/07/2026",
-      estado: "Completado",
-    },
-    {
-      id: 8,
-      socio: "Sofía Castillo",
-      tipo: "Préstamo",
-      monto: "RD$ 50,000",
-      fecha: "08/07/2026",
-      estado: "Aprobado",
-    },
-  ];
+  const [datos, setDatos] = useState({
+    resumen: {},
+    movimientos: [],
+  });
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    apiRequest("/reportes.php")
+      .then((data) => setDatos(data))
+      .catch((err) => setError(err.message));
+  }, []);
+
+  const resumen = datos.resumen || {};
+  const movimientos = datos.movimientos || [];
 
   return (
     <section className="reportes-page">
       <div className="reportes-header">
         <div>
-          <p className="reportes-subtitle">COOEMPRENDII</p>
+          <p className="reportes-subtitle">COOEMPRENDI</p>
           <h1>Reportes Generales</h1>
           <p className="reportes-descripcion">
             Resumen de préstamos, pagos y movimientos del sistema.
           </p>
         </div>
-
-        <button className="btn-exportar">Exportar reporte</button>
       </div>
+
+      {error && <p className="login-server-error">{error}</p>}
 
       <div className="tarjetas-reportes">
         <article className="tarjeta-reporte">
           <span>Total prestado</span>
-          <strong>RD$ 210,000</strong>
+          <strong>{formatMoney(resumen.total_prestado)}</strong>
         </article>
-
         <article className="tarjeta-reporte">
           <span>Total pagado</span>
-          <strong>RD$ 27,500</strong>
+          <strong>{formatMoney(resumen.total_pagado)}</strong>
         </article>
-
         <article className="tarjeta-reporte">
           <span>Préstamos aprobados</span>
-          <strong>5</strong>
+          <strong>{resumen.prestamos_aprobados || 0}</strong>
         </article>
-
         <article className="tarjeta-reporte">
           <span>Préstamos pendientes</span>
-          <strong>3</strong>
+          <strong>{resumen.prestamos_pendientes || 0}</strong>
         </article>
-
         <article className="tarjeta-reporte">
           <span>Socios registrados</span>
-          <strong>8</strong>
+          <strong>{resumen.socios_registrados || 0}</strong>
         </article>
-
         <article className="tarjeta-reporte">
           <span>Pagos registrados</span>
-          <strong>8</strong>
+          <strong>{resumen.pagos_registrados || 0}</strong>
         </article>
       </div>
 
       <section className="tabla-reporte-card">
         <h2>Movimientos recientes</h2>
-
         <div className="tabla-contenedor">
           <table className="tabla-reportes">
             <thead>
@@ -129,24 +73,27 @@ function Reportes() {
                 <th>Estado</th>
               </tr>
             </thead>
-
             <tbody>
-              {movimientos.map((movimiento) => (
-                <tr key={movimiento.id}>
-                  <td>{movimiento.id}</td>
-                  <td>{movimiento.socio}</td>
-                  <td>{movimiento.tipo}</td>
-                  <td>{movimiento.monto}</td>
-                  <td>{movimiento.fecha}</td>
-                  <td>
-                    <span
-                      className={`estado-reporte ${movimiento.estado.toLowerCase()}`}
-                    >
-                      {movimiento.estado}
-                    </span>
-                  </td>
+              {movimientos.length === 0 ? (
+                <tr>
+                  <td className="empty-state" colSpan="6">No hay movimientos para mostrar.</td>
                 </tr>
-              ))}
+              ) : (
+                movimientos.map((movimiento, index) => (
+                  <tr key={`${movimiento.tipo}-${movimiento.id}-${index}`}>
+                    <td>{movimiento.id}</td>
+                    <td>{movimiento.socio}</td>
+                    <td>{movimiento.tipo}</td>
+                    <td>{formatMoney(movimiento.monto)}</td>
+                    <td>{movimiento.fecha}</td>
+                    <td>
+                      <span className={`estado-reporte ${String(movimiento.estado).toLowerCase()}`}>
+                        {movimiento.estado}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

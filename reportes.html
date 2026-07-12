@@ -1,1 +1,119 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><link rel='stylesheet' href='assets/css/style.css'><title>Reportes</title></head><body><div class='sidebar'><h2>COOEMPRENDI</h2></div><div class='content'><h1>Reportes</h1><p>Página en diseño.</p></div></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reportes - COOEMPRENDI</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sidebar">
+<h2>COOEMPRENDI</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="socios.html">Socios</a>
+<a href="ahorros.html">Ahorros</a>
+<a href="prestamos.html">Prestamos</a>
+<a href="pagos.html">Pagos</a>
+<a href="reportes.html" class="active">Reportes</a>
+<a href="usuarios.html">Usuarios</a>
+</div>
+
+<div class="content">
+<nav class="topbar">
+<span>Reportes Generales</span>
+<span>Usuario</span>
+</nav>
+
+<div class="page-header">
+<div>
+<h1>Reportes</h1>
+<p>Resumen de prestamos, pagos y movimientos del sistema.</p>
+</div>
+<div class="summary-pill">Modulo activo</div>
+</div>
+
+<div class="cards">
+<div class="card">Total prestado<strong id="total-prestado">RD$0.00</strong></div>
+<div class="card">Total pagado<strong id="total-pagado">RD$0.00</strong></div>
+<div class="card">Prestamos aprobados<strong id="prestamos-aprobados">0</strong></div>
+<div class="card">Pagos registrados<strong id="pagos-registrados">0</strong></div>
+</div>
+
+<section class="panel">
+<h3>Movimientos Recientes</h3>
+<p id="mensaje-reportes" class="form-message"></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Socio</th>
+<th>Tipo</th>
+<th>Monto</th>
+<th>Fecha</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody id="lista-reportes">
+<tr class="empty-row"><td colspan="6">No hay movimientos para mostrar.</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<script>
+const formatoMoneda = new Intl.NumberFormat('es-DO', {
+    style: 'currency',
+    currency: 'DOP'
+});
+
+function dinero(valor) {
+    return formatoMoneda.format(Number(valor || 0));
+}
+
+async function cargarReportes() {
+    const mensaje = document.getElementById('mensaje-reportes');
+    const lista = document.getElementById('lista-reportes');
+
+    try {
+        const respuesta = await fetch('api/reportes.php', {
+            credentials: 'include',
+            headers: { 'Accept': 'application/json' }
+        });
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || datos.success === false) {
+            throw new Error(datos.message || 'No fue posible cargar los reportes.');
+        }
+
+        const resumen = datos.resumen || {};
+        const movimientos = datos.movimientos || [];
+
+        document.getElementById('total-prestado').textContent = dinero(resumen.total_prestado);
+        document.getElementById('total-pagado').textContent = dinero(resumen.total_pagado);
+        document.getElementById('prestamos-aprobados').textContent = resumen.prestamos_aprobados || 0;
+        document.getElementById('pagos-registrados').textContent = resumen.pagos_registrados || 0;
+
+        if (movimientos.length === 0) {
+            lista.innerHTML = '<tr class="empty-row"><td colspan="6">No hay movimientos para mostrar.</td></tr>';
+            return;
+        }
+
+        lista.innerHTML = movimientos.map((movimiento) => `
+            <tr>
+                <td>${movimiento.id}</td>
+                <td>${movimiento.socio}</td>
+                <td>${movimiento.tipo}</td>
+                <td>${dinero(movimiento.monto)}</td>
+                <td>${movimiento.fecha}</td>
+                <td>${movimiento.estado}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        mensaje.textContent = error.message;
+    }
+}
+
+cargarReportes();
+</script>
+</body>
+</html>

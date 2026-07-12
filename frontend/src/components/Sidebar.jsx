@@ -7,6 +7,7 @@ const navigationItems = [
   { path: "/prestamos", label: "Préstamos" },
   { path: "/pagos", label: "Pagos" },
   { path: "/reportes", label: "Reportes" },
+  { path: "/usuarios", label: "Usuarios" },
 ];
 
 function Sidebar() {

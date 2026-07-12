@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Usuarios - COOEMPRENDI</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sidebar">
+<h2>COOEMPRENDI</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="socios.html">Socios</a>
+<a href="ahorros.html">Ahorros</a>
+<a href="prestamos.html">Prestamos</a>
+<a href="pagos.html">Pagos</a>
+<a href="reportes.html">Reportes</a>
+<a href="usuarios.html" class="active">Usuarios</a>
+</div>
+
+<div class="content">
+<nav class="topbar">
+<span>Gestion de Usuarios</span>
+<span>Usuario</span>
+</nav>
+
+<div class="page-header">
+<div>
+<h1>Usuarios</h1>
+<p>Administra las cuentas de acceso del sistema.</p>
+</div>
+<div class="summary-pill">Modulo activo</div>
+</div>
+
+<div class="panel-grid">
+<section class="panel">
+<h3>Registrar Nuevo Usuario</h3>
+<form id="form-usuarios" class="form-grid">
+<label for="usuario-nombre">Nombre Completo</label>
+<input type="text" id="usuario-nombre" required>
+
+<label for="usuario-acceso">Usuario</label>
+<input type="text" id="usuario-acceso" required>
+
+<label for="usuario-clave">Contrasena</label>
+<input type="password" id="usuario-clave" required>
+
+<label for="usuario-rol">Rol</label>
+<select id="usuario-rol">
+<option value="administrador">Administrador</option>
+<option value="operador">Operador</option>
+<option value="consulta">Consulta</option>
+</select>
+
+<button type="submit">Registrar Usuario</button>
+</form>
+<p id="mensaje-usuarios" class="form-message"></p>
+</section>
+
+<section class="panel">
+<h3>Resumen</h3>
+<div class="metric">
+<span>Usuarios registrados</span>
+<strong id="total-usuarios">0</strong>
+</div>
+</section>
+</div>
+
+<section class="panel">
+<h3>Listado de Usuarios</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Nombre</th>
+<th>Usuario</th>
+<th>Rol</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody id="lista-usuarios">
+<tr class="empty-row"><td colspan="5">No hay usuarios registrados.</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<script>
+const formUsuarios = document.getElementById('form-usuarios');
+const listaUsuarios = document.getElementById('lista-usuarios');
+const totalUsuarios = document.getElementById('total-usuarios');
+const mensajeUsuarios = document.getElementById('mensaje-usuarios');
+
+async function apiUsuarios(opciones = {}) {
+    const respuesta = await fetch('api/usuarios.php', {
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            ...(opciones.body ? { 'Content-Type': 'application/json' } : {})
+        },
+        ...opciones
+    });
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok || datos.success === false) {
+        throw new Error(datos.message || 'No fue posible completar la operacion.');
+    }
+
+    return datos;
+}
+
+function pintarUsuarios(usuarios) {
+    totalUsuarios.textContent = usuarios.length;
+
+    if (usuarios.length === 0) {
+        listaUsuarios.innerHTML = '<tr class="empty-row"><td colspan="5">No hay usuarios registrados.</td></tr>';
+        return;
+    }
+
+    listaUsuarios.innerHTML = usuarios.map((usuario) => `
+        <tr>
+            <td>${usuario.id_usuario}</td>
+            <td>${usuario.nombre}</td>
+            <td>${usuario.usuario}</td>
+            <td>${usuario.rol}</td>
+            <td>${Number(usuario.activo) === 1 ? 'Activo' : 'Inactivo'}</td>
+        </tr>
+    `).join('');
+}
+
+async function cargarUsuarios() {
+    try {
+        const datos = await apiUsuarios();
+        pintarUsuarios(datos.usuarios || []);
+    } catch (error) {
+        mensajeUsuarios.textContent = error.message;
+    }
+}
+
+formUsuarios.addEventListener('submit', async function(evento) {
+    evento.preventDefault();
+    mensajeUsuarios.textContent = '';
+
+    try {
+        await apiUsuarios({
+            method: 'POST',
+            body: JSON.stringify({
+                nombre: document.getElementById('usuario-nombre').value,
+                usuario: document.getElementById('usuario-acceso').value,
+                clave: document.getElementById('usuario-clave').value,
+                rol: document.getElementById('usuario-rol').value,
+                activo: 1
+            })
+        });
+        formUsuarios.reset();
+        mensajeUsuarios.textContent = 'Usuario registrado correctamente.';
+        await cargarUsuarios();
+    } catch (error) {
+        mensajeUsuarios.textContent = error.message;
+    }
+});
+
+cargarUsuarios();
+</script>
+</body>
+</html>

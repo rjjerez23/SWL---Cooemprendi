@@ -1,124 +1,196 @@
-import "./Prestamos.css";
+import { useEffect, useState } from "react";
+import { apiRequest, formatMoney } from "../services/apiClient.js";
 
 function Prestamos() {
-  const prestamos = [
-    {
-      id: 1,
-      socio: "Juan Pérez",
-      monto: "RD$ 10,000",
-      interes: "12%",
-      cuotas: 12,
-      fecha: "01/07/2026",
-      estado: "Aprobado",
-    },
-    {
-      id: 2,
-      socio: "María López",
-      monto: "RD$ 25,000",
-      interes: "15%",
-      cuotas: 24,
-      fecha: "02/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 3,
-      socio: "Carlos Rodríguez",
-      monto: "RD$ 18,000",
-      interes: "13%",
-      cuotas: 18,
-      fecha: "03/07/2026",
-      estado: "Aprobado",
-    },
-    {
-      id: 4,
-      socio: "Ana Martínez",
-      monto: "RD$ 40,000",
-      interes: "16%",
-      cuotas: 36,
-      fecha: "04/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 5,
-      socio: "Pedro Gómez",
-      monto: "RD$ 15,000",
-      interes: "12%",
-      cuotas: 12,
-      fecha: "05/07/2026",
-      estado: "Aprobado",
-    },
-    {
-      id: 6,
-      socio: "Laura Fernández",
-      monto: "RD$ 30,000",
-      interes: "14%",
-      cuotas: 24,
-      fecha: "06/07/2026",
-      estado: "Aprobado",
-    },
-    {
-      id: 7,
-      socio: "José Ramírez",
-      monto: "RD$ 22,000",
-      interes: "13%",
-      cuotas: 18,
-      fecha: "07/07/2026",
-      estado: "Pendiente",
-    },
-    {
-      id: 8,
-      socio: "Sofía Castillo",
-      monto: "RD$ 50,000",
-      interes: "17%",
-      cuotas: 36,
-      fecha: "08/07/2026",
-      estado: "Aprobado",
-    },
-  ];
+  const [socios, setSocios] = useState([]);
+  const [prestamos, setPrestamos] = useState([]);
+  const [formulario, setFormulario] = useState({
+    id_socio: "",
+    monto: "",
+    interes: "",
+    cuotas: "",
+    fecha: new Date().toISOString().slice(0, 10),
+    estado: "Pendiente",
+  });
+  const [error, setError] = useState("");
+
+  async function cargarDatos() {
+    const [sociosData, prestamosData] = await Promise.all([
+      apiRequest("/socios.php"),
+      apiRequest("/prestamos.php"),
+    ]);
+    setSocios(sociosData.socios || []);
+    setPrestamos(prestamosData.prestamos || []);
+  }
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargar() {
+      try {
+        const [sociosData, prestamosData] = await Promise.all([
+          apiRequest("/socios.php"),
+          apiRequest("/prestamos.php"),
+        ]);
+
+        if (activo) {
+          setSocios(sociosData.socios || []);
+          setPrestamos(prestamosData.prestamos || []);
+        }
+      } catch (err) {
+        if (activo) {
+          setError(err.message);
+        }
+      }
+    }
+
+    cargar();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormulario((actual) => ({ ...actual, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+
+    try {
+      await apiRequest("/prestamos.php", {
+        method: "POST",
+        body: JSON.stringify(formulario),
+      });
+      setFormulario({
+        id_socio: "",
+        monto: "",
+        interes: "",
+        cuotas: "",
+        fecha: new Date().toISOString().slice(0, 10),
+        estado: "Pendiente",
+      });
+      await cargarDatos();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
-    <main className="prestamos-page">
-      <section className="prestamos-card">
-        <div className="prestamos-header">
-          <div>
-            <p className="prestamos-subtitle">COOEMPRENDII</p>
-            <h1>Gestión de Préstamos</h1>
+    <section className="module-page">
+      <header className="dashboard-welcome">
+        <div>
+          <h1>Gestión de préstamos</h1>
+          <p>Registro y seguimiento de préstamos.</p>
+        </div>
+        <span className="dashboard-date">Préstamos</span>
+      </header>
+
+      <section className="dashboard-stats module-stats">
+        <article className="stat-card">
+          <div className="stat-card-symbol" aria-hidden="true">PR</div>
+          <div className="stat-card-content">
+            <p className="stat-card-title">Préstamos registrados</p>
+            <p className="stat-card-value">{prestamos.length}</p>
+            <span className="stat-card-detail">Solicitudes guardadas</span>
           </div>
-
-          <button className="btn-nuevo">+ Nuevo préstamo</button>
-        </div>
-
-        <div className="tabla-contenedor">
-          <table className="tabla-prestamos">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Socio</th>
-                <th>Monto</th>
-                <th>Interés</th>
-                <th>Cuotas</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {prestamos.map((prestamo) => (
-                <tr key={prestamo.id}>
-                  <td>{prestamo.id}</td>
-                  <td>{prestamo.socio}</td>
-                  <td>{prestamo.monto}</td>
-                  <td>{prestamo.interes}</td>
-                  <td>{prestamo.cuotas}</td>
-                  <td>{prestamo.fecha}</td>
-                  <td>{prestamo.estado}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        </article>
+        <article className="stat-card">
+          <div className="stat-card-symbol" aria-hidden="true">PE</div>
+          <div className="stat-card-content">
+            <p className="stat-card-title">Pendientes</p>
+            <p className="stat-card-value">{prestamos.filter((prestamo) => prestamo.estado === "Pendiente").length}</p>
+            <span className="stat-card-detail">Por revisar</span>
+          </div>
+        </article>
       </section>
-    </main>
+
+      <div className="dashboard-grid module-grid">
+        <section className="dashboard-section">
+          <header className="dashboard-section-header">
+            <div>
+              <h2>Registrar préstamo</h2>
+              <p>Define socio, monto, interés, cuotas y estado.</p>
+            </div>
+          </header>
+
+          <form className="module-form-grid" onSubmit={handleSubmit}>
+            <select className="form-input" name="id_socio" value={formulario.id_socio} onChange={handleChange} required>
+              <option value="">Seleccionar socio</option>
+              {socios.map((socio) => (
+                <option key={socio.id_socio} value={socio.id_socio}>
+                  {socio.nombre}
+                </option>
+              ))}
+            </select>
+            <input className="form-input" name="monto" type="number" min="0" step="0.01" value={formulario.monto} onChange={handleChange} placeholder="Monto" required />
+            <input className="form-input" name="interes" type="number" min="0" step="0.01" value={formulario.interes} onChange={handleChange} placeholder="Interés %" required />
+            <input className="form-input" name="cuotas" type="number" min="1" value={formulario.cuotas} onChange={handleChange} placeholder="Cuotas" required />
+            <input className="form-input" name="fecha" type="date" value={formulario.fecha} onChange={handleChange} required />
+            <select className="form-input" name="estado" value={formulario.estado} onChange={handleChange}>
+              <option>Pendiente</option>
+              <option>Aprobado</option>
+              <option>Rechazado</option>
+              <option>Pagado</option>
+            </select>
+            <button className="btn-primary module-submit" type="submit">Registrar préstamo</button>
+          </form>
+
+          {error && <p className="login-server-error">{error}</p>}
+        </section>
+
+        <section className="dashboard-section">
+          <header className="dashboard-section-header">
+            <div>
+              <h2>Listado de préstamos</h2>
+              <p>Estado general de las solicitudes registradas.</p>
+            </div>
+          </header>
+
+          <div className="dashboard-table-container">
+            <table className="dashboard-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Socio</th>
+                  <th>Monto</th>
+                  <th>Interés</th>
+                  <th>Cuotas</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {prestamos.length === 0 ? (
+                  <tr>
+                    <td className="empty-state" colSpan="7">No hay préstamos registrados.</td>
+                  </tr>
+                ) : (
+                  prestamos.map((prestamo) => (
+                    <tr key={prestamo.id_prestamo}>
+                      <td>{prestamo.id_prestamo}</td>
+                      <td>{prestamo.socio}</td>
+                      <td className="movement-amount">{formatMoney(prestamo.monto)}</td>
+                      <td>{prestamo.interes}%</td>
+                      <td>{prestamo.cuotas}</td>
+                      <td>{prestamo.fecha}</td>
+                      <td>
+                        <span className={`status-badge ${prestamo.estado === "Aprobado" || prestamo.estado === "Pagado" ? "status-completed" : "status-pending"}`}>
+                          {prestamo.estado}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
   );
 }
 

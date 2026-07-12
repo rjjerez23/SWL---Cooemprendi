@@ -1,1 +1,107 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><link rel='stylesheet' href='assets/css/style.css'><title>Pagos</title></head><body><div class='sidebar'><h2>COOEMPRENDI</h2></div><div class='content'><h1>Pagos</h1><p>Página en diseño.</p></div></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pagos - COOEMPRENDI</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sidebar">
+<h2>COOEMPRENDI</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="socios.html">Socios</a>
+<a href="ahorros.html">Ahorros</a>
+<a href="prestamos.html">Prestamos</a>
+<a href="pagos.html" class="active">Pagos</a>
+<a href="reportes.html">Reportes</a>
+<a href="usuarios.html">Usuarios</a>
+</div>
+
+<div class="content">
+<nav class="topbar">
+<span>Control de Pagos</span>
+<span>Usuario</span>
+</nav>
+
+<div class="page-header">
+<div>
+<h1>Pagos</h1>
+<p>Registra pagos realizados y consulta el historial reciente.</p>
+</div>
+<div class="summary-pill">Modulo activo</div>
+</div>
+
+<div class="panel-grid">
+<section class="panel">
+<h3>Registrar Nuevo Pago</h3>
+<form id="form-pagos" class="form-grid">
+<label for="pago-socio">Cedula o ID del Socio</label>
+<input type="text" id="pago-socio" required>
+
+<label for="pago-monto">Monto Pagado</label>
+<input type="number" id="pago-monto" step="0.01" min="0" required>
+
+<label for="pago-concepto">Concepto</label>
+<input type="text" id="pago-concepto" required>
+
+<button type="submit">Registrar Pago</button>
+</form>
+</section>
+
+<section class="panel">
+<h3>Resumen</h3>
+<div class="metric">
+<span>Total pagado</span>
+<strong>RD$<span id="total-pagos">0.00</span></strong>
+</div>
+</section>
+</div>
+
+<section class="panel">
+<h3>Listado de Pagos</h3>
+<table id="tabla-pagos">
+<thead>
+<tr>
+<th>Socio (ID)</th>
+<th>Monto</th>
+<th>Concepto</th>
+</tr>
+</thead>
+<tbody id="lista-pagos">
+<tr class="empty-row"><td colspan="3">No hay pagos registrados.</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<script>
+const formPagos = document.getElementById('form-pagos');
+const listaPagos = document.getElementById('lista-pagos');
+const totalPagos = document.getElementById('total-pagos');
+let cantidadPagos = 0;
+let montoPagado = 0;
+
+formPagos.addEventListener('submit', function(evento) {
+    evento.preventDefault();
+
+    const socio = document.getElementById('pago-socio').value;
+    const monto = parseFloat(document.getElementById('pago-monto').value);
+    const concepto = document.getElementById('pago-concepto').value;
+
+    if (cantidadPagos === 0) {
+        listaPagos.innerHTML = '';
+    }
+
+    const fila = document.createElement('tr');
+    fila.innerHTML = `<td>${socio}</td><td>RD$${monto.toFixed(2)}</td><td>${concepto}</td>`;
+    listaPagos.appendChild(fila);
+
+    cantidadPagos += 1;
+    montoPagado += monto;
+    totalPagos.textContent = montoPagado.toFixed(2);
+    formPagos.reset();
+});
+</script>
+</body>
+</html>

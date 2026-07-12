@@ -1,1 +1,107 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><link rel='stylesheet' href='assets/css/style.css'><title>Préstamos</title></head><body><div class='sidebar'><h2>COOEMPRENDI</h2></div><div class='content'><h1>Préstamos</h1><p>Página en diseño.</p></div></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prestamos - COOEMPRENDI</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sidebar">
+<h2>COOEMPRENDI</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="socios.html">Socios</a>
+<a href="ahorros.html">Ahorros</a>
+<a href="prestamos.html" class="active">Prestamos</a>
+<a href="pagos.html">Pagos</a>
+<a href="reportes.html">Reportes</a>
+<a href="usuarios.html">Usuarios</a>
+</div>
+
+<div class="content">
+<nav class="topbar">
+<span>Gestion de Prestamos</span>
+<span>Usuario</span>
+</nav>
+
+<div class="page-header">
+<div>
+<h1>Prestamos</h1>
+<p>Registra solicitudes y da seguimiento a los prestamos aprobados.</p>
+</div>
+<div class="summary-pill">Modulo activo</div>
+</div>
+
+<div class="panel-grid">
+<section class="panel">
+<h3>Registrar Nuevo Prestamo</h3>
+<form id="form-prestamos" class="form-grid">
+<label for="prestamo-socio">Cedula o ID del Socio</label>
+<input type="text" id="prestamo-socio" required>
+
+<label for="prestamo-monto">Monto Solicitado</label>
+<input type="number" id="prestamo-monto" step="0.01" min="0" required>
+
+<label for="prestamo-plazo">Plazo (meses)</label>
+<input type="number" id="prestamo-plazo" min="1" required>
+
+<button type="submit">Registrar Prestamo</button>
+</form>
+</section>
+
+<section class="panel">
+<h3>Resumen</h3>
+<div class="metric">
+<span>Total prestado</span>
+<strong>RD$<span id="total-prestamos">0.00</span></strong>
+</div>
+</section>
+</div>
+
+<section class="panel">
+<h3>Listado de Prestamos</h3>
+<table id="tabla-prestamos">
+<thead>
+<tr>
+<th>Socio (ID)</th>
+<th>Monto</th>
+<th>Plazo</th>
+</tr>
+</thead>
+<tbody id="lista-prestamos">
+<tr class="empty-row"><td colspan="3">No hay prestamos registrados.</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<script>
+const formPrestamos = document.getElementById('form-prestamos');
+const listaPrestamos = document.getElementById('lista-prestamos');
+const totalPrestamos = document.getElementById('total-prestamos');
+let cantidadPrestamos = 0;
+let montoPrestado = 0;
+
+formPrestamos.addEventListener('submit', function(evento) {
+    evento.preventDefault();
+
+    const socio = document.getElementById('prestamo-socio').value;
+    const monto = parseFloat(document.getElementById('prestamo-monto').value);
+    const plazo = document.getElementById('prestamo-plazo').value;
+
+    if (cantidadPrestamos === 0) {
+        listaPrestamos.innerHTML = '';
+    }
+
+    const fila = document.createElement('tr');
+    fila.innerHTML = `<td>${socio}</td><td>RD$${monto.toFixed(2)}</td><td>${plazo} meses</td>`;
+    listaPrestamos.appendChild(fila);
+
+    cantidadPrestamos += 1;
+    montoPrestado += monto;
+    totalPrestamos.textContent = montoPrestado.toFixed(2);
+    formPrestamos.reset();
+});
+</script>
+</body>
+</html>

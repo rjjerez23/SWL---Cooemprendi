@@ -32,8 +32,6 @@
   border-radius: 8px;
 }
 
-/* Tarjetas estadísticas */
-
 .dashboard-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -106,8 +104,6 @@
   color: var(--color-primary);
 }
 
-/* Secciones inferiores */
-
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
@@ -140,8 +136,6 @@
   font-size: 13px;
   color: var(--color-text-secondary);
 }
-
-/* Tabla */
 
 .dashboard-table-container {
   overflow-x: auto;
@@ -203,8 +197,6 @@
   background-color: rgba(242, 177, 52, 0.18);
 }
 
-/* Acciones rápidas */
-
 .quick-actions {
   display: flex;
   flex-direction: column;
@@ -256,7 +248,39 @@
   color: var(--color-text-secondary);
 }
 
-/* Adaptación para diferentes pantallas */
+.module-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.module-stats {
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  margin: 0;
+}
+
+.module-grid {
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.4fr);
+  align-items: start;
+}
+
+.module-form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.module-form-grid .form-input {
+  min-height: 46px;
+}
+
+.module-submit {
+  width: 100%;
+  min-height: 46px;
+}
+
+.dashboard-section .login-server-error {
+  margin-top: 16px;
+}
 
 @media (max-width: 1200px) {
   .dashboard-stats {
@@ -265,7 +289,8 @@
 }
 
 @media (max-width: 900px) {
-  .dashboard-grid {
+  .dashboard-grid,
+  .module-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -275,7 +300,8 @@
     flex-direction: column;
   }
 
-  .dashboard-stats {
+  .dashboard-stats,
+  .module-stats {
     grid-template-columns: 1fr;
   }
 

@@ -14,6 +14,7 @@ import Ahorros from "./pages/Ahorros.jsx";
 import Prestamos from "./pages/Prestamos.jsx";
 import Pagos from "./pages/Pagos.jsx";
 import Reportes from "./pages/Reportes.jsx";
+import Usuarios from "./pages/Usuarios.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 function App() {
@@ -53,6 +54,11 @@ function App() {
           <Route
             path="/reportes"
             element={<Reportes />}
+          />
+
+          <Route
+            path="/usuarios"
+            element={<Usuarios />}
           />
         </Route>
       </Route>

@@ -1,50 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset='UTF-8'>
-    <link rel='stylesheet' href='assets/css/style.css'>
-    <title>Socios</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Socios - COOEMPRENDI</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class='sidebar'>
-        <h2>COOEMPRENDI</h2>
-    </div>
-    
-    <div class='content'>
-        <h1>Socios</h1>
-        
-        <!-- Formulario para registrar socios -->
-        <form id="form-socios">
-            <h3>Registrar Nuevo Socio</h3>
-            <label>Nombre Completo:</label>
-            <input type="text" id="socio-nombre" required><br><br>
-            
-            <label>Cédula o ID:</label>
-            <input type="text" id="socio-id" required><br><br>
-            
-            <label>Teléfono:</label>
-            <input type="tel" id="socio-telefono" required><br><br>
-            
-            <button type="submit">Registrar Socio</button>
-        </form>
-        
-        <hr>
-        
-        <!-- Tabla de Socios -->
-        <h3>Listado de Socios</h3>
-        <table border="1" id="tabla-socios">
-            <thead>
-                <tr>
-                    <th>ID / Cédula</th>
-                    <th>Nombre</th>
-                    <th>Teléfono</th>
-                </tr>
-            </thead>
-            <tbody id="lista-socios"></tbody>
-        </table>
-    </div>
+<div class="sidebar">
+<h2>COOEMPRENDI</h2>
+<a href="dashboard.html">Dashboard</a>
+<a href="socios.html" class="active">Socios</a>
+<a href="ahorros.html">Ahorros</a>
+<a href="prestamos.html">Prestamos</a>
+<a href="pagos.html">Pagos</a>
+<a href="reportes.html">Reportes</a>
+<a href="usuarios.html">Usuarios</a>
+</div>
 
-    <!-- Enlace al archivo externo de JavaScript -->
-    <script src="socios.js"></script>
+<div class="content">
+<nav class="topbar">
+<span>Gestion de Socios</span>
+<span>Usuario</span>
+</nav>
+
+<div class="page-header">
+<div>
+<h1>Socios</h1>
+<p>Registra y consulta los socios de la cooperativa.</p>
+</div>
+<div class="summary-pill">Modulo activo</div>
+</div>
+
+<div class="panel-grid">
+<section class="panel">
+<h3>Registrar Nuevo Socio</h3>
+<form id="form-socios" class="form-grid">
+<label for="socio-nombre">Nombre Completo</label>
+<input type="text" id="socio-nombre" required>
+
+<label for="socio-id">Cedula o ID</label>
+<input type="text" id="socio-id" required>
+
+<label for="socio-telefono">Telefono</label>
+<input type="tel" id="socio-telefono" required>
+
+<button type="submit">Registrar Socio</button>
+</form>
+</section>
+
+<section class="panel">
+<h3>Resumen</h3>
+<div class="metric">
+<span>Total de socios registrados</span>
+<strong id="total-socios">0</strong>
+</div>
+</section>
+</div>
+
+<section class="panel">
+<h3>Listado de Socios</h3>
+<table id="tabla-socios">
+<thead>
+<tr>
+<th>ID / Cedula</th>
+<th>Nombre</th>
+<th>Telefono</th>
+</tr>
+</thead>
+<tbody id="lista-socios">
+<tr class="empty-row"><td colspan="3">No hay socios registrados.</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<script>
+const formSocios = document.getElementById('form-socios');
+const listaSocios = document.getElementById('lista-socios');
+const totalSocios = document.getElementById('total-socios');
+let cantidadSocios = 0;
+
+formSocios.addEventListener('submit', function(evento) {
+    evento.preventDefault();
+
+    const nombre = document.getElementById('socio-nombre').value;
+    const id = document.getElementById('socio-id').value;
+    const telefono = document.getElementById('socio-telefono').value;
+
+    if (cantidadSocios === 0) {
+        listaSocios.innerHTML = '';
+    }
+
+    const fila = document.createElement('tr');
+    fila.innerHTML = `<td>${id}</td><td>${nombre}</td><td>${telefono}</td>`;
+    listaSocios.appendChild(fila);
+    cantidadSocios += 1;
+    totalSocios.textContent = cantidadSocios;
+    formSocios.reset();
+});
+</script>
 </body>
 </html>
